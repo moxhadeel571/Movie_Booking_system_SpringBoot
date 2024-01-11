@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/moviesystem
+    username: root
+    password: newpass
+  jpa:
+    hibernate:
+      ddl-auto: update
+
+
+apiKey: rzp_test_BGPTgqrkVagzn6
+secretKey: l48xX7CnwytQmBn5twVyiavo

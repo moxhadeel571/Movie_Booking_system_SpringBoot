@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Book Ticket</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="/css/global.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <script src="/js/Upcoming.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="/js/Upcoming.js"></script>
+</head>
+<style>
+    body {
+        background-color: #f8f9fa;
+    }
+    .food{
+        max-height: 30px;
+    }
+    .time_list {
+        list-style: none;
+        padding: 0;
+        display: flex;
+    }
+
+    .schedule {
+        margin-right: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        text-decoration: none;
+        color: #000;
+    }
+    .movie-container {
+        max-width: 800px;
+        margin: 50px auto;
+    }
+
+    .movie-card {
+        margin-bottom: 20px;
+    }
+    .time_list{
+        display: flex;
+        flex-direction: row;
+
+        justify-content: center;
+    }.schedule{
+         font-family: Calibri;
+         border-style: ridge;
+         border-radius: 1px;
+         border-color: red;
+         display: flex;
+         max-width: 200px;
+         max-height: 50px;
+         justify-content: space-between;
+         padding: 10px;
+         margin: 10px;
+         text-decoration-color: greenyellow;
+         color: green;
+
+     }
+</style>
+
+<body>
+<div th:insert="Fragment/Header::#header"></div>
+<div id="idmovie" class="visually-hidden" th:text="${idticket}"></div>
+<div id="theaterId" class="visually-hidden" th:text="${theaterId}"></div>
+<div class="container-fluid">
+    <div id="MovieView"></div>
+</div>
+<div class="movie-container">
+    <!-- MovieData Cards -->
+
+    <!-- Show Timings -->
+    <!-- Loop through the theaters -->
+    <div th:each="theater : ${theaters}" class="movie-card card">
+        <div class="card-body">
+            <!-- Display Theater Title -->
+            <h5 class="card-title" th:text="${theater.name}"></h5>
+
+            <!-- Display Theater Area/Location -->
+            <p class="card-text" th:text="${theater.location}"></p>
+
+            <div class="container">
+                <div class="time_select">
+                    <!-- Loop through the schedules for this theater -->
+                    <ul class="time_list">
+                        <div class="food">
+                            <img src="/icons/fast-food.png" style="max-height: 50px; max-width: 50px" alt="">
+                            <p class="text-sm-start">Food and beverages</p>
+                        </div>
+
+                        <!-- Loop through schedules and create timing links -->
+                        <li class="row gap-2" th:each="schedule : ${#strings.arraySplit(theater.schedules, ',')}">
+                            <a th:href="@{'/Client/theater_Seating/' + ${idticket} + '/theater/' + ${theater.id} + '/schedule/' + ${schedule}}" class="schedule" data-toggle="popover" th:text="${schedule}"></a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div th:insert="Fragment/Footer::#footer"></div>
+<script>
+    $(function () {
+        $('[data-toggle="popover"]').popover({
+            trigger: 'hover',
+            content: 'Ticket Rate: ₹250',
+            placement: 'top',
+            color:'green'
+        })
+    })
+
+</script>
+<script>
+    async function getById() {
+        try {
+            const apiKey = '913cb5e6f6cf3b3fba98e32fa5566fb8'; // Replace with your TMDb API key
+            const idElement = document.getElementById("idmovie");
+
+            if (idElement) {
+                const movieId = idElement.textContent.trim();
+                console.log('Movie ID:', movieId);
+
+                const getByIdUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`;
+                const response = await fetch(getByIdUrl);
+                console.log(response);
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const movieData = await response.json();
+                await displayById(movieData);
+                console.log('Movie by ID:', movieData);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error.message);
+        }
+    }
+
+    async function displayById(movieData) {
+        const getElementById = document.getElementById("MovieView");
+        if (!getElementById || !movieData) {
+            console.log("Error Fetching Data");
+            return;
+        }
+
+        const div = document.createElement("div");
+        const movieElement = document.createElement("div");
+
+        const genresHTML = movieData.genres.map(genre => `<div class="card-text d-flex justify-content-start text-lg">${genre.name}</div>`).join('');
+
+        movieElement.innerHTML = `
+              <div class="flex-grow-1">
+                  <h1 class="fw-semibold d-flex justify-content-center">
+                  <div class="side-heading"><i class="fas  fa-video icon"></i> Title: </div>
+                  ${movieData.title}</h1>
+              </div>
+      `;
+
+        div.appendChild(movieElement);
+        getElementById.appendChild(div);
+    }
+
+    document.addEventListener('DOMContentLoaded', getById);
+</script>
+
+</body>
+</html>

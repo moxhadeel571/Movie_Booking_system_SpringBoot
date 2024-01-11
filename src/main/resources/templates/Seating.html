@@ -1,0 +1,419 @@
+
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Seat Select</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <link href="/css/bootstrap.min.css" rel="stylesheet" >
+    <link href="/css/font-awesome.min.css" rel="stylesheet" >
+    <link href="/css/global.css" rel="stylesheet">
+    <link href="/css/index.css" rel="stylesheet">
+    <script src="/js/Upcoming.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
+    <script src="/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="/js/Upcoming.js"></script>
+</head>
+<style>
+    @import url("https://fonts.googleapis.com/css?family=Montserrat&display=swap");
+
+    @import url("https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css");
+
+    movie-container {
+        font-family: "Montserrat", sans-serif;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        background-color: #242333;
+        color: #fff;
+        margin: 0;
+    }
+
+    * {
+        font-family: "Montserrat", sans-serif !important;
+        box-sizing: border-box;
+    }
+
+    .movie-container {
+        margin: 20px 0px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column
+    }
+
+    .movie-container select {
+        appearance: none;
+        -moz-appearance: none;
+        -webkit-appearance: none;
+        border: 0;
+        padding: 5px 15px;
+        margin-bottom: 40px;
+        font-size: 14px;
+        border-radius: 5px;
+    }
+
+    .container {
+        perspective: 1000px;
+        margin: 40px 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .seat {
+        background-color: #444451;
+        height: 12px;
+        width: 15px;
+        margin: 3px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .selected {
+        background-color: #0081cb;
+    }
+
+    .occupied {
+        background-color: #fff;
+    }
+
+    .seat:nth-of-type(2) {
+        margin-right: 18px;
+    }
+
+    .seat:nth-last-of-type(2) {
+        margin-left: 18px;
+    }
+
+    .seat:not(.occupied):hover {
+        cursor: pointer;
+        transform: scale(1.2);
+    }
+
+    .showcase .seat:not(.occupied):hover {
+        cursor: default;
+        transform: scale(1);
+    }
+
+    .showcase {
+        display: flex;
+        justify-content: space-between;
+        list-style-type: none;
+        background: rgba(0,0,0,0.1);
+        padding: 5px 10px;
+        border-radius: 5px;
+        color: #777;
+    }
+
+    .showcase li {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 10px;
+    }
+
+    .showcase li small {
+        margin-left: 2px;
+    }
+
+    .row {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .screen {
+        background: #fff;
+        height: 70px;
+        width: 70%;
+        margin: 15px 0;
+        transform: rotateX(-45deg);
+        box-shadow: 0 3px 10px rgba(255,255,255,0.7);
+    }
+
+    p.text {
+        margin: 40px 0;
+    }
+
+    p.text span {
+        color: #0081cb;
+        font-weight: 600;
+        box-sizing: content-box;
+    }
+
+    .credits a {
+        color: #fff;
+    }
+
+
+
+</style>
+<body>
+<div th:insert="Fragment/Header::#header"></div>
+<div id="idmovie" class="visually-hidden" th:text="${idticket}"></div>
+<div id="idticket" class="visually-hidden" th:text="${id}"></div>
+<div id="theater" class="visually-hidden" th:text="${theater.id}"></div>
+<div id="schedule" class="visually-hidden" th:text="${schedule}"></div>
+<div id="bookingid" class="visually-hidden" th:text="${booking.id}"></div>
+
+<div th:each="theatername: ${theater}">
+    <div class="card-title d-flex justify-content-sm-center" th:text="${theatername.name}"></div>
+    <div class="text-capitalize text-center" th:text="${schedule}"></div>
+    <div class="text-capitalize text-center" id="price_data" th:text="${price2}"></div>
+    <div class="text-capitalize text-center" th:text="${theatername.location}"></div>
+<!--    <div class="text-capitalize text-center" th:text="${totalprice}"></div>-->
+</div>
+<div class="movie-container">
+    <label  i class="card-header-pills">
+        <div id="MovieView"></div>
+    </label>
+
+    <div id="movie">
+    </div>
+
+    <ul class="showcase">
+        <li>
+            <div class="seat"></div>
+            <small>N/A</small>
+        </li>
+        <li>
+            <div class="seat selected"></div>
+            <small>Selected</small>
+        </li>
+        <li>
+            <div class="seat occupied"></div>
+            <small>Occupied</small>
+        </li>
+    </ul>
+
+    <div class="container">
+        <div class="screen"></div>
+
+        <div class="row" data-row="1">
+            <div class="seat" data-seat="1"></div>
+            <div class="seat" data-seat="2"></div>
+            <div class="seat" data-seat="3"></div>
+            <div class="seat" data-seat="4"></div>
+            <div class="seat" data-seat="5"></div>
+            <div class="seat" data-seat="6"></div>
+            <div class="seat" data-seat="7"></div>
+            <div class="seat" data-seat="8"></div>
+        </div>
+        <div class="row" data-row="2">
+            <div class="seat" data-seat="9"></div>
+            <div class="seat" data-seat="10"></div>
+            <div class="seat " data-seat="11"></div>
+            <div class="seat " data-seat="12"></div>
+            <div class="seat " data-seat="13"></div>
+            <div class="seat" data-seat="14"></div>
+            <div class="seat" data-seat="15"></div>
+        </div>
+        <div class="row" data-row="3">
+            <div class="seat" data-seat="16"></div>
+            <div class="seat" data-seat="17"></div>
+            <div class="seat" data-seat="18"></div>
+            <div class="seat" data-seat="19"></div>
+            <div class="seat" data-seat="20"></div>
+            <div class="seat" data-seat="21"></div>
+            <div class="seat " data-seat="22"></div>
+            <div class="seat " data-seat="23"></div>
+        </div>
+        <div class="row" data-row="4">
+            <div class="seat" data-seat="24"></div>
+            <div class="seat" data-seat="25"></div>
+            <div class="seat" data-seat="26"></div>
+            <div class="seat" data-seat="27"></div>
+            <div class="seat" data-seat="28"></div>
+            <div class="seat" data-seat="29"></div>
+            <div class="seat" data-seat="30"></div>
+        </div>
+        <div class="row" data-row="5">
+            <div class="seat" data-seat="31"></div>
+            <div class="seat" data-seat="32"></div>
+            <div class="seat" data-seat="33"></div>
+            <div class="seat " data-seat="34"></div>
+            <div class="seat " data-seat="35"></div>
+            <div class="seat" data-seat="36"></div>
+            <div class="seat" data-seat="37"></div>
+            <div class="seat" data-seat="38"></div>
+        </div>
+
+        <p class="text">
+            You have selected <span id="count">0</span> seats for the total price of Rs. <span id="total">0</span>
+        </p>
+        <button id="continueButton">
+            Continue to Final Form
+        </button>
+
+
+
+
+    </div>
+</div>
+<script>
+    const continueButton = document.getElementById('continueButton');
+
+    continueButton.addEventListener('click', function() {
+        const selectedSeatsButton = document.querySelectorAll('.row .seat.selected');
+
+        if (selectedSeatsButton.length === 0) {
+            // Handle case where no seats are selected
+            alert('Please select at least one seat before proceeding.');
+            return;
+        }
+
+        const selectedSeatsArray = Array.from(selectedSeatsButton).map(seat => seat.dataset.seat);
+        const selectedSeatsString = selectedSeatsArray.join(',');
+        const finalFormLink = `/Client/FinalForm/${idticket}/theater/${theater.id}/schedule/${schedule}`;
+        console.log('Clicked continueButton');
+        console.log('Selected Seats:', selectedSeatsArray);
+        console.log('Final Form Link:', finalFormLink);
+
+        window.location.href = finalFormLink;
+    });
+</script>
+
+<div class="credits"><a href="http://www.aniket.co" target="_blank">aniket.co</a></div>
+</div><div th:insert="Fragment/Footer::#footer"></div>
+<!-- Add this script at the end of your HTML body or in your script section -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+
+<script>
+    $(document).ready(function() {
+        $('.button a').on('click', function() {
+            // Get the URL from the 'th:href' attribute
+            var url = $(this).attr('th:href');
+
+            // Redirect to the specified URL
+            window.location.href = url;
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const container = document.querySelector('.container');
+    const seats = document.querySelectorAll('.row .seat:not(.occupied)');
+    const count = document.getElementById('count');
+    const total = document.getElementById('total');
+    let ticketPrice = +document.getElementById('price_data').textContent; // Get the ticket price
+    let selectedSeats = []; // Array to store selected seats and row and seat numbers
+    // Update total and count
+    function updateSelectedCount() {
+        const selectedSeatsElements = document.querySelectorAll('.row .seat.selected');
+        selectedSeats = Array.from(selectedSeatsElements).map(seat => ({
+            rowNumber: seat.parentElement.dataset.row,
+            seatNumber: seat.dataset.seat,
+        }));
+
+        const selectedSeatsCount = selectedSeats.length;
+        count.innerText = selectedSeatsCount;
+        total.innerText = selectedSeatsCount * ticketPrice;
+    }
+    // Seat click event
+    container.addEventListener('click', (e) => {
+        console.log('Seat clicked!');
+        if (e.target.classList.contains('seat') && !e.target.classList.contains('occupied')) {
+            e.target.classList.toggle('selected');
+            updateSelectedCount();
+        }
+    });
+    // Continue button click event
+    const continueButton = document.getElementById('continueButton');
+        // Continue button click event
+        continueButton.addEventListener('click', function (e) {
+            // Prevent the seat click event from being triggered
+            e.stopPropagation();
+
+            const selectedSeatsButton = document.querySelectorAll('.row .seat.selected');
+
+            if (selectedSeatsButton.length === 0) {
+                // Handle case where no seats are selected
+                alert('Please select at least one seat before proceeding.');
+                return;
+            }
+
+            const selectedSeatsArray = Array.from(selectedSeatsButton).map(seat => seat.dataset.seat);
+            const selectedSeatsCount = selectedSeatsArray.length;
+            const totalAmount = selectedSeatsCount * ticketPrice;
+
+            const idticket = document.getElementById('idticket').textContent;
+            const theaterId = document.getElementById('theater').textContent;
+            const schedule = document.getElementById('schedule').textContent;
+
+// Construct the finalFormLink with query parameters for total seats and total amount
+            const finalFormLink = `/Client/FinalForm/${idticket}/theater/${theaterId}/schedule/${schedule}?seats=${selectedSeatsCount}&amount=${totalAmount}`;
+
+// Redirect to the final form page with the constructed link
+            window.location.href = finalFormLink;
+
+        });
+
+    });
+</script>
+
+<script>
+    async function getById() {
+        try {
+            const apiKey = '913cb5e6f6cf3b3fba98e32fa5566fb8'; // Replace with your TMDb API key
+            const idElement = document.getElementById("idmovie");
+
+            if (idElement) {
+                const movieId = idElement.textContent.trim();
+                console.log('Movie ID:', movieId);
+
+                const getByIdUrl = `https://api.themoviedb.org/3/movie/${movieId}?api_key=${apiKey}`;
+                const response = await fetch(getByIdUrl);
+                console.log(response);
+
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.status} - ${response.statusText}`);
+                }
+
+                const movieData = await response.json();
+                await displayById(movieData);
+                console.log('Movie by ID:', movieData);
+            }
+        } catch (error) {
+            console.error('Error fetching data:', error.message);
+        }
+    }
+
+    async function displayById(movieData) {
+        const getElementById = document.getElementById("MovieView");
+        if (!getElementById || !movieData) {
+            console.log("Error Fetching Data");
+            return;
+        }
+
+        const div = document.createElement("div");
+        const movieElement = document.createElement("div");
+
+        const genresHTML = movieData.genres.map(genre => `<div class="card-text d-flex justify-content-start text-lg">${genre.name}</div>`).join('');
+
+        movieElement.innerHTML = `
+    <div class="flex-grow-1">
+        <h1 class="fw-semibold d-flex justify-content-center">
+            <div class="side-heading"><i class="fas fa-video icon"></i>  </div>
+            ${movieData.title}
+        </h1>
+    </div>
+`;
+
+
+        div.appendChild(movieElement);
+        getElementById.appendChild(div);
+    }
+
+    document.addEventListener('DOMContentLoaded', getById);
+</script>
+</body>
+
+</html>
